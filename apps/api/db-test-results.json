@@ -1,0 +1,187 @@
+{
+  "pred forte": [
+    {
+      "id": "911e180a-c335-4e67-b967-eddde2f81efe",
+      "name": "Pred Forte Opthalmic Suspension",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "a28fc31e-616d-42d6-b549-34470e76947a",
+      "name": "Elpred Forte Oral Solution",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "a3c60cfd-d806-47a9-8d85-4dd1fccca2e2",
+      "name": "Neopred Forte 20mg Tablet",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "predforte": [],
+  "amplinak": [
+    {
+      "id": "f36c6e31-a1ec-4437-b341-ee7e7410ba08",
+      "name": "Amplinak Opthalmic Suspension",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "amplinac": [],
+  "soha": [
+    {
+      "id": "121e5033-7ac6-41b6-8ce0-574ff9cab1e9",
+      "name": "Soha Liquigel",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "2d8cbdd2-a522-4137-badd-c00d7d791306",
+      "name": "Soha 0.1% Eye Drop",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "69339f4a-4f41-4fc7-aca5-997242bc26e7",
+      "name": "Soha 0.1% Eye Drop",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "soha liquigel": [
+    {
+      "id": "121e5033-7ac6-41b6-8ce0-574ff9cab1e9",
+      "name": "Soha Liquigel",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "8ecc3d5c-3275-48d1-b93a-db38f97a7c18",
+      "name": "Soha Liquigel",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "para": [
+    {
+      "id": "0081f0ca-8a04-49ea-bd60-a67ec5fbce64",
+      "name": "Parapin 650mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "02a360e2-fed1-4084-841d-93ec72a91145",
+      "name": "Paradin K 50mg/500mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "02e2c8b4-24d3-455f-99e5-799394de9b04",
+      "name": "Paracee Plus Syrup",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "tpara": [
+    {
+      "id": "308aa9e0-c25b-4dfb-9a4e-320c47e3ab23",
+      "name": "XTPara 250mg/5ml Suspension",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "38f9b815-8f66-4def-ba69-653eb31bf4e7",
+      "name": "XTPara 1000mg Infusion",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "3cf8ea8f-daad-4fe5-ab23-af278d2d1a00",
+      "name": "Fastpara 500mg Tablet",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "para 650": [
+    {
+      "id": "06536616-c31b-4f80-8973-17e654df72c4",
+      "name": "Para 650mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "0da7cc4d-0593-46c2-9fba-1abc5b3c2219",
+      "name": "Para Para 650mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "24c2eae9-a8eb-4c66-9b29-6fa42dfffb8b",
+      "name": "Cropara 650mg Tablet",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "razo": [
+    {
+      "id": "003a7ef0-8c66-420f-ac78-3f2f9887c8b1",
+      "name": "StayHappi Rabeprazole+Itopride 20mg/150mg Capsule",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "00b2a1fe-12df-49df-a68e-d51f9e3a24ff",
+      "name": "Domprazole 10mg/20mg Capsule",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "01556394-1984-4c4f-a7ff-eb1c3033617d",
+      "name": "Razole D 30mg/20mg Capsule SR",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "trazo": [
+    {
+      "id": "029e1c55-3f82-483e-8d27-c9616f8b9de3",
+      "name": "Zitrazole-IT Anti Fungal Cream",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "0624f2e1-4423-443a-b679-761c00507c9d",
+      "name": "Trazona 50mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "0784c0e3-725d-4120-b138-3dc47e759ddb",
+      "name": "Kotrazol 200mg Capsule",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "iopar": [
+    {
+      "id": "03341477-b945-4892-b571-3ec6f1e2416b",
+      "name": "Biopar 1000mg Injection",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "0df64597-3f0d-4b65-b10c-9cdea712a8d2",
+      "name": "Piopar 30 Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "156f3995-0914-498a-8119-95b271a3d9de",
+      "name": "Piopar 15 Tablet",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "ciopar": [],
+  "alprax": [
+    {
+      "id": "0164b764-97aa-426d-abd2-b9ec528b134b",
+      "name": "Alprax 0.25 Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "05d6ac55-3631-4872-95f6-e07a6a584a17",
+      "name": "Alprax Z 0.5 mg/3 mg Tablet",
+      "dosageForm": "allopathy"
+    },
+    {
+      "id": "1fad0a44-555d-455a-ab64-96c0bcb7a29d",
+      "name": "Alprax 1.5mg Tablet SR",
+      "dosageForm": "allopathy"
+    }
+  ],
+  "talprax": [],
+  "lutisight": [],
+  "tlutisight": [],
+  "milflodex": [
+    {
+      "id": "8f68e73a-cb24-47a2-adc5-dba4cd0aabe4",
+      "name": "Milflodex BKC Free Eye Drop",
+      "dosageForm": "allopathy"
+    }
+  ]
+}

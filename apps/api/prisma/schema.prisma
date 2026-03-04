@@ -1,0 +1,98 @@
+// apps/api/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  fullName     String?
+  role         String    @default("PATIENT") // PATIENT, DOCTOR, ADMIN
+  ringtoneUrl  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  intakeLogs   IntakeLog[]
+  inventory    Inventory[]
+  reminders    Reminder[]
+  scans        PrescriptionScan[]
+}
+
+// UserRole enum removed for SQLite compatibility
+
+model MedicineMaster {
+  id             String  @id @default(uuid())
+  name           String  
+  manufacturer   String?
+  composition    String? 
+  description    String?
+  dosageForm     String? 
+  price          String?
+  packSizeLabel  String?
+
+  @@index([name])
+  @@index([composition])
+}
+
+model Inventory {
+  id              String   @id @default(uuid())
+  userId          String
+  medicineName    String   
+  quantity        Int      @default(0)
+  lowStockLimit   Int      @default(10)
+  expiryDate      DateTime?
+  
+  user            User     @relation(fields: [userId], references: [id])
+  @@index([userId])
+}
+
+model Reminder {
+  id           String   @id @default(uuid())
+  userId       String
+  medicineName String
+  dosage       String?
+  time         String   
+  days         String   // Stored as JSON string ["MON", "TUE"]
+  foodTiming   String   @default("ANY") // BEFORE_FOOD, AFTER_FOOD, WITH_FOOD, ANY
+  isActive     Boolean  @default(true)
+  
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model IntakeLog {
+  id           String      @id @default(uuid())
+  userId       String
+  medicineName String
+  status       String      // TAKEN, MISSED, SKIPPED
+  takenAt      DateTime    @default(now())
+  
+  user         User        @relation(fields: [userId], references: [id])
+}
+
+// IntakeStatus enum removed for SQLite compatibility
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PrescriptionScan {
+  id           String   @id @default(uuid())
+  userId       String
+  imageUrl     String?  // Supabase URL or local fallback
+  rawText      String   // OCR output
+  parsedData   String   // JSON string from LLM
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id])
+}

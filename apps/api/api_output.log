@@ -1,0 +1,107 @@
+[33m[nodemon] 3.1.11[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 30300 on port 3001...
+Killed PID 30300
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 34340 on port 3001...
+Killed PID 34340
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 15116 on port 3001...
+Killed PID 15116
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 41348 on port 3001...
+Killed PID 41348
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 41716 on port 3001...
+Killed PID 41716
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 42520 on port 3001...
+Killed PID 42520
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 41608 on port 3001...
+Killed PID 41608
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 37244 on port 3001...
+Killed PID 37244
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 31844 on port 3001...
+ERROR: The process "31844" not found.
+Port 3001 is still in use after killing. Exiting.
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Port 3001 is in use. Attempting to kill blocking process...
+Killing process 36844 on port 3001...
+Killed PID 36844
+Server is running on http://0.0.0.0:3001
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/index.ts`[39m
+Server is running on http://0.0.0.0:3001
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

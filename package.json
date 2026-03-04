@@ -1,0 +1,21 @@
+{
+  "name": "mediscan-secure-go",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "elysian-health-ui-main"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "latest",
+    "typescript": "latest"
+  },
+  "packageManager": "npm@10.0.0"
+}

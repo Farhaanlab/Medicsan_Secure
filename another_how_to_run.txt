@@ -1,0 +1,59 @@
+Summary of commands:
+OCR Service: cd update_for_ocr then uvicorn main:app --host 0.0.0.0 --port 8085
+Backend API: cd apps/api then npm run dev
+Frontend UI: cd elysian-health-ui-main then npm run dev
+Open your browser to http://localhost:8081 once they are all
+
+
+Here are the step-by-step instructions to run the Android app on your physical Android phone directly from Android Studio:
+
+Step 1: Enable Developer Options on Your Phone
+On your Android phone, go to Settings > About phone.
+Find the Build number (sometimes located under "Software information").
+Tap Build number 7 times rapidly until you see a message saying "You are now a developer!".
+Step 2: Enable USB Debugging
+Go back to the main Settings menu and look for Developer options (usually at the very bottom, or under "System").
+Scroll down to the "Debugging" section and turn on USB debugging.
+Step 3: Connect Your Phone
+Connect your phone to your computer using a USB cable.
+A prompt should appear on your phone asking to "Allow USB debugging?". Check "Always allow from this computer" and tap Allow.
+Step 4: Run the App from Android Studio
+In Android Studio (which we just opened earlier), look at the top toolbar. You should see a dropdown menu that currently says something like "Pixel API..." or "No Devices".
+Click that dropdown. Your physical phone (e.g., "Samsung SM-G998U" or something similar) should now appear in the list. Select it.
+Click the green Play button (▶) next to the device dropdown to run the app.
+Android Studio will build the app and install it directly onto your phone. The app will launch automatically on your screen once it's done!
+Alternative: Build an APK File (to send to others)
+If you just want an .apk file that you can install like a regular Android app download:
+
+In Android Studio, go to the top menu and select Build > Build Bundle(s) / APK(s) > Build APK(s).
+Wait for the build to finish. A popup will appear in the bottom right corner—click locate to find your app-debug.apk file.
+Transfer this .apk file to your phone (via Google Drive, email, or USB) and tap it on your phone to install it.
+
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+I have created a comprehensive step-by-step master guide for you on exactly how to start and run the MediScan platform!
+
+I saved this to a special file called a "Workflow". Since you use this Chat Assistant often, you can now run this entire sequence automatically just by typing: 👉 /run-mediscan
+
+If you ever want to read the raw steps yourself or do it manually, I saved the file to your project: 
+
+c:\Users\faarh\Desktop\Antigravity_mediscan_prompt1.agents\workflows\run-mediscan.md
+.
+
+It includes:
+
+Identifying your computer's local Wi-Fi IP address.
+Code instructions to tie the Android app's 
+
+api.ts
+ directly to your computer.
+Steps to boot the FastAPI Python OCR server.
+Steps to boot the Node.js API database backend.
+Steps to trigger the Vite React website.
+The terminal commands to sync the web code inside the native Android folder, build it, and launch Android Studio with your specific 
+
+C:\Program Files\Android\Android Studio1\bin\studio64.exe
+ path included so it doesn't crash.
+Let me know if you would like me to test running that new command for you!
+

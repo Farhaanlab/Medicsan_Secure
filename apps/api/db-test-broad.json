@@ -1,0 +1,325 @@
+{
+  "20": [
+    {
+      "id": "0000d5fe-2aef-4cd0-84d5-124293579ede",
+      "name": "DT Care 200mg Injection"
+    },
+    {
+      "id": "00042382-553c-4f6e-a9be-f7d5facc033a",
+      "name": "Zelglip M 500mg/20mg Tablet"
+    },
+    {
+      "id": "00045a9d-f667-4012-8ce0-73a1862e963c",
+      "name": "Cefirest 200 Tablet DT"
+    },
+    {
+      "id": "00048778-f693-416b-8d89-105cdc7a0df4",
+      "name": "Giada M 500mg/20mg Tablet ER"
+    },
+    {
+      "id": "00067ce6-3c3b-4a54-a909-853abf1f351d",
+      "name": "Civido 15mg/20mg Tablet"
+    }
+  ],
+  "650": [
+    {
+      "id": "0081f0ca-8a04-49ea-bd60-a67ec5fbce64",
+      "name": "Parapin 650mg Tablet"
+    },
+    {
+      "id": "00ba3c42-4234-4d97-8e25-45c172f64fee",
+      "name": "Alerfri SF 650 mg/60 mg/2.5 mg Tablet"
+    },
+    {
+      "id": "00e98363-6ce5-4106-9d08-55308f148da2",
+      "name": "Selmol 650mg Tablet"
+    },
+    {
+      "id": "01484c70-d0cc-482a-9edd-d02eff96cec7",
+      "name": "Orthofen 50mg/650mg Tablet"
+    },
+    {
+      "id": "01dc846f-c557-41d7-9a01-2be89499be28",
+      "name": "Kelvin 650mg Tablet"
+    }
+  ],
+  "luti": [
+    {
+      "id": "00641b4a-0888-41ac-8a32-ab988c6638c2",
+      "name": "Zuiver Hair Regrowth + Solution Alcohol Free"
+    },
+    {
+      "id": "0084e108-0fb5-41c7-ab80-a2f6a3b299fc",
+      "name": "Mars Groww Topical Solution"
+    },
+    {
+      "id": "008e33fe-ccd7-42fa-83aa-1febf073368a",
+      "name": "Indowart Solution"
+    },
+    {
+      "id": "00aeb209-de3c-4973-83fb-e4de0db27eea",
+      "name": "Mincon AX Solution"
+    },
+    {
+      "id": "00c76b2f-798b-46db-a938-98f1c0a83235",
+      "name": "Fresky Oral Solution"
+    }
+  ],
+  "sight": [
+    {
+      "id": "04945238-5dae-4a69-8491-938e1e6b581c",
+      "name": "Hysight Eye Drop"
+    },
+    {
+      "id": "04f1caba-b671-499a-bef0-cc055e6187f2",
+      "name": "Nepasight 0.1% Eye Drop"
+    },
+    {
+      "id": "1d775741-94a8-42fd-8e20-c2a89cfb95a0",
+      "name": "Azisight 250mg Tablet"
+    },
+    {
+      "id": "20c86787-da9a-42ec-a02d-45f073457ced",
+      "name": "Closight GM Cream"
+    },
+    {
+      "id": "219d0612-5cb5-43c1-97b5-800e930f16d1",
+      "name": "Mecosight-Forte Injection"
+    }
+  ],
+  "pred": [
+    {
+      "id": "0181ea2f-56dc-4d49-b8d9-bbef0b499bd6",
+      "name": "Predivir 4 Tablet"
+    },
+    {
+      "id": "019170c8-d78e-416f-b798-3374dc3ab408",
+      "name": "Genericart Methylprednisolone 16mg Tablet"
+    },
+    {
+      "id": "01d0903b-3446-46b9-ac94-277cb1448c45",
+      "name": "Preddy 4mg Tablet"
+    },
+    {
+      "id": "01ec0d09-0f14-4af9-9c89-d1c3aeac4054",
+      "name": "Elopred 4mg Tablet"
+    },
+    {
+      "id": "02c95bb9-9224-4c70-a291-2b854b6d5106",
+      "name": "Rixipred 40mg Injection"
+    }
+  ],
+  "forte": [
+    {
+      "id": "001a59ea-062e-41f5-b97f-c46e9e6f9b03",
+      "name": "Rtm Forte 80mg/480mg Tablet"
+    },
+    {
+      "id": "0032c166-c48d-4427-a80d-98dad70c06be",
+      "name": "Esilo Forte 0.5mg/10mg Tablet"
+    },
+    {
+      "id": "0038373b-1579-4b36-815d-e62cb28b6c5a",
+      "name": "Dicloforte 4mg/50mg Tablet"
+    },
+    {
+      "id": "0048e2b0-0f85-4be4-8b0a-a70be0eb3071",
+      "name": "Methalco Forte Injection"
+    },
+    {
+      "id": "004df52b-3bab-4f7c-81f4-1b21d43b170a",
+      "name": "Riposh Forte Tablet"
+    }
+  ],
+  "ampli": [
+    {
+      "id": "2aa00bd0-49da-4b6c-bd1b-ed9eba9bc0c7",
+      "name": "Amplifyer 250 mg/125 mg Tablet"
+    },
+    {
+      "id": "97dd061f-1392-4767-ab67-107704e69903",
+      "name": "Amplifyer 500 mg/125 mg Tablet"
+    },
+    {
+      "id": "b5ec1f29-c256-46cb-97ec-8352d75d3395",
+      "name": "Amplifyer Dry Syrup"
+    },
+    {
+      "id": "f36c6e31-a1ec-4437-b341-ee7e7410ba08",
+      "name": "Amplinak Opthalmic Suspension"
+    }
+  ],
+  "nak": [
+    {
+      "id": "01c3d766-9600-4d61-b2b8-4ed1a5d02288",
+      "name": "Gabanak M 750mcg/75mg Capsule"
+    },
+    {
+      "id": "036ab625-38de-46a0-847d-42e2706385a4",
+      "name": "Ondanak 8mg Tablet"
+    },
+    {
+      "id": "0429b4f6-33b3-484c-90f9-f3ec13da8790",
+      "name": "Rozanak 20mg Tablet"
+    },
+    {
+      "id": "0513f1c9-8489-4916-9aff-791725e075aa",
+      "name": "Antisnake Venom Injection"
+    },
+    {
+      "id": "0ace540e-e4b9-4b22-8899-3460abca6510",
+      "name": "Flazanak 6mg Tablet"
+    }
+  ],
+  "iopar": [
+    {
+      "id": "03341477-b945-4892-b571-3ec6f1e2416b",
+      "name": "Biopar 1000mg Injection"
+    },
+    {
+      "id": "0df64597-3f0d-4b65-b10c-9cdea712a8d2",
+      "name": "Piopar 30 Tablet"
+    },
+    {
+      "id": "156f3995-0914-498a-8119-95b271a3d9de",
+      "name": "Piopar 15 Tablet"
+    },
+    {
+      "id": "382d3111-e227-4425-9551-3978f1ee339e",
+      "name": "Triopar 10 Capsule"
+    },
+    {
+      "id": "4ec53269-dc75-4e25-801d-9098d2093ffe",
+      "name": "Piopar-MF 7.5 Tablet SR"
+    }
+  ],
+  "ciopar": [],
+  "piopar": [
+    {
+      "id": "0df64597-3f0d-4b65-b10c-9cdea712a8d2",
+      "name": "Piopar 30 Tablet"
+    },
+    {
+      "id": "156f3995-0914-498a-8119-95b271a3d9de",
+      "name": "Piopar 15 Tablet"
+    },
+    {
+      "id": "4ec53269-dc75-4e25-801d-9098d2093ffe",
+      "name": "Piopar-MF 7.5 Tablet SR"
+    },
+    {
+      "id": "63f1b8dc-45db-498c-b382-058c017bfea0",
+      "name": "Piopar-MF 15 Tablet ER"
+    },
+    {
+      "id": "75c694ce-85bb-4f0a-b05b-a428981e5af5",
+      "name": "Piopar 7.5 Tablet"
+    }
+  ],
+  "biopar": [
+    {
+      "id": "03341477-b945-4892-b571-3ec6f1e2416b",
+      "name": "Biopar 1000mg Injection"
+    },
+    {
+      "id": "586bcc6e-a439-4752-9ac8-acb243204e9a",
+      "name": "Biopara-N Tablet"
+    },
+    {
+      "id": "8ff7a737-e814-4f11-a1f3-96b42081cc39",
+      "name": "Biopar 250mg Injection"
+    },
+    {
+      "id": "f3b848f8-5d85-42d5-b492-5bd85af94cd9",
+      "name": "Biopar 10mg/325mg Tablet"
+    }
+  ],
+  "alp": [
+    {
+      "id": "0105c6aa-d1b5-4f4a-a245-b0e7ca1b8e2b",
+      "name": "Alprose 0.25mg Tablet"
+    },
+    {
+      "id": "0164b764-97aa-426d-abd2-b9ec528b134b",
+      "name": "Alprax 0.25 Tablet"
+    },
+    {
+      "id": "02aa0696-ec2b-4ab2-8321-ab02a5faa599",
+      "name": "Alpviram 0.25mg Tablet"
+    },
+    {
+      "id": "02ea83d8-32b5-4647-b2a8-918690aa72dc",
+      "name": "Valporate Chrono 200 Tablet"
+    },
+    {
+      "id": "0440bee8-7cb5-4b9c-b91f-e1be3d1754e2",
+      "name": "Alprowon 0.25mg Tablet"
+    }
+  ],
+  "prax": [
+    {
+      "id": "0164b764-97aa-426d-abd2-b9ec528b134b",
+      "name": "Alprax 0.25 Tablet"
+    },
+    {
+      "id": "0374c853-9078-4f7d-8ea7-90406742ca29",
+      "name": "Ariprax 0.5mg Tablet"
+    },
+    {
+      "id": "05d6ac55-3631-4872-95f6-e07a6a584a17",
+      "name": "Alprax Z 0.5 mg/3 mg Tablet"
+    },
+    {
+      "id": "0a5c96b4-b939-4fa4-a5ea-fd07e13e52f4",
+      "name": "Liprax 25mg Tablet SR"
+    },
+    {
+      "id": "0baad962-9f71-4a1a-94b6-baaf6bc066ec",
+      "name": "Liprax 10mg Tablet SR"
+    }
+  ],
+  "razo": [
+    {
+      "id": "003a7ef0-8c66-420f-ac78-3f2f9887c8b1",
+      "name": "StayHappi Rabeprazole+Itopride 20mg/150mg Capsule"
+    },
+    {
+      "id": "00b2a1fe-12df-49df-a68e-d51f9e3a24ff",
+      "name": "Domprazole 10mg/20mg Capsule"
+    },
+    {
+      "id": "01556394-1984-4c4f-a7ff-eb1c3033617d",
+      "name": "Razole D 30mg/20mg Capsule SR"
+    },
+    {
+      "id": "0196e303-2c02-4d78-927e-980b9b45b723",
+      "name": "Larazole-MD Kid Tablet Orange"
+    },
+    {
+      "id": "01b79768-3ea5-465a-ad81-0383eb83f890",
+      "name": "DavaIndia Domperidone+Pantoprazole 30mg/40mg Capsule SR"
+    }
+  ],
+  "para": [
+    {
+      "id": "0081f0ca-8a04-49ea-bd60-a67ec5fbce64",
+      "name": "Parapin 650mg Tablet"
+    },
+    {
+      "id": "02a360e2-fed1-4084-841d-93ec72a91145",
+      "name": "Paradin K 50mg/500mg Tablet"
+    },
+    {
+      "id": "02e2c8b4-24d3-455f-99e5-799394de9b04",
+      "name": "Paracee Plus Syrup"
+    },
+    {
+      "id": "03053f9b-e217-430e-b312-af6235cd3e02",
+      "name": "Paraever P 100mg/325mg Tablet"
+    },
+    {
+      "id": "03883823-264d-48ae-b74d-51fa38a1ba20",
+      "name": "Paramol 250mg/5ml Syrup"
+    }
+  ]
+}

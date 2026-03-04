@@ -1,0 +1,33 @@
+# Walkthrough: MediScan Secure Full System
+
+The complete **MediScan Secure Full** suite is now running. This setup includes the main dashboard, the API backend, the specialized OCR service, and the legacy UI.
+
+## Active Components & Ports
+
+| Component | Technology | URL |
+| :--- | :--- | :--- |
+| **Vite UI** | React / Vite | [http://localhost:8080](http://localhost:8080) |
+| **Next.js Dashboard** | Next.js | [http://localhost:3000](http://localhost:3000) |
+| **Backend API** | Node.js / Express | [http://localhost:3001](http://localhost:3001) |
+| **OCR Service** | Python / FastAPI | [http://localhost:8085](http://localhost:8085) |
+
+## How to Start the Full System
+
+To start everything simultaneously, you need to run two separate sets of commands (one for Node/Web and one for Python/OCR).
+
+### 1. Start the Monorepo (Web, API, UI)
+From the root directory:
+```bash
+npm run dev
+```
+*This command uses Turbo to launch `apps/web` (3000), `apps/api` (3001), and `elysian-health-ui-main` (8080) in parallel.*
+
+### 2. Start the OCR Service
+From the root directory in a **new terminal**:
+```bash
+cd update_for_ocr
+uvicorn main:app --host 0.0.0.0 --port 8085
+```
+
+> [!TIP]
+> Each service has been tested and verified as accessible. The Vite UI on port 8080 is configured to proxy API requests to port 3001 automatically.
