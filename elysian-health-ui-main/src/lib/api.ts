@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core';
 
 // In native apps, we can't use relative /api paths (no Vite proxy).
 // Use the backend URL directly. Change this to your server IP/domain.
-const NATIVE_API_URL = 'http://192.168.1.6:3001/api'; // Host machine IP for physical device
+const NATIVE_API_URL = 'http://192.168.1.12:3001/api'; // Host machine WiFi IP for physical device
 const WEB_API_URL = '/api'; // Vite proxy handles this
 
 const API_BASE = Capacitor.isNativePlatform() ? NATIVE_API_URL : WEB_API_URL;
@@ -57,7 +57,6 @@ async function request<T = any>(
 
     if (res.status === 401) {
         clearToken();
-        window.location.href = '/login';
         throw new Error('Unauthorized');
     }
 
@@ -121,8 +120,6 @@ export const api = {
         }
         return res.json();
     },
-    changePassword: (currentPassword: string, newPassword: string) =>
-        request('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) }),
 
     // Medicines
     searchMedicines: (q: string) => request(`/medicines/search?q=${encodeURIComponent(q)}`),
@@ -153,26 +150,20 @@ export const api = {
     logIntake: (medicineName: string, status: string) =>
         request('/user/history', { method: 'POST', body: JSON.stringify({ medicineName, status }) }),
 
-    // OCR Scan
+    // OCR Scan — hits the standalone Python OCR server directly (same as the website uses)
     scanPrescription: async (formData: FormData) => {
-        const token = getToken();
-        const headers: Record<string, string> = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-        // Do NOT set Content-Type — browser sets multipart boundary automatically
         let res: Response;
         try {
-            res = await fetch(`${API_BASE}/ocr/scan`, {
+            // Use the Python OCR engine directly on port 8085
+            const scanUrl = Capacitor.isNativePlatform()
+                ? 'http://192.168.1.3:8085/scan'
+                : 'http://localhost:8085/scan';
+            res = await fetch(scanUrl, {
                 method: 'POST',
-                headers,
                 body: formData,
             });
         } catch {
             throw new Error('Network error: Could not reach the server');
-        }
-        if (res.status === 401) {
-            clearToken();
-            window.location.href = '/login';
-            throw new Error('Unauthorized');
         }
         const contentType = res.headers.get('content-type') || '';
         let data: any;

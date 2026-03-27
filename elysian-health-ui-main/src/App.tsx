@@ -18,6 +18,7 @@ import ScanPrescription from "./pages/ScanPrescription";
 import MultiMedOnboarding from "./pages/MultiMedOnboarding";
 import AiChat from "./pages/AiChat";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -33,15 +34,15 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/search" element={<SearchMedicines />} />
-              <Route path="/medicine/:id" element={<MedicineDetail />} />
-              <Route path="/reminders" element={<Reminders />} />
-              <Route path="/history" element={<HistoryLog />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/scan" element={<ScanPrescription />} />
-              <Route path="/multi-onboarding" element={<MultiMedOnboarding />} />
-              <Route path="/chat" element={<AiChat />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/search" element={<ProtectedRoute><SearchMedicines /></ProtectedRoute>} />
+              <Route path="/medicine/:id" element={<ProtectedRoute><MedicineDetail /></ProtectedRoute>} />
+              <Route path="/reminders" element={<ProtectedRoute><Reminders /></ProtectedRoute>} />
+              <Route path="/history" element={<ProtectedRoute><HistoryLog /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/scan" element={<ProtectedRoute><ScanPrescription /></ProtectedRoute>} />
+              <Route path="/multi-onboarding" element={<ProtectedRoute><MultiMedOnboarding /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><AiChat /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

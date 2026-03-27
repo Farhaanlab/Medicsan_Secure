@@ -31,7 +31,7 @@ This server processes the images loaded from the frontend.
 2. Navigate to the OCR server folder:
    ```powershell
    // turbo
-   cd c:\Users\faarh\Desktop\Antigravity_mediscan_prompt1\update_for_ocr
+   cd c:\Users\faarh\Desktop\Antigravity_mediscan_prompt1\update_for_ocr_2
    ```
 3. Start the FastAPI server on port 8085:
    ```powershell
@@ -118,9 +118,8 @@ After ensuring your Native API URL is correctly set to your computer's IP addres
    npx cap sync android
    ```
 5. Open up Android Studio with this targeted project:
-   *(If this command fails with an IDE Error, run the Absolute Path manually like: `$env:CAPACITOR_ANDROID_STUDIO_PATH="C:\Program Files\Android\Android Studio1\bin\studio64.exe"; npx cap open android`)*
    ```powershell
    // turbo
-   npx cap open android
+   $env:CAPACITOR_ANDROID_STUDIO_PATH="C:\Program Files\Android\Android Studio1\bin\studio64.exe"; npx cap open android
    ```
 6. **In Android Studio:** Wait for the "Gradle Sync" to finish and index perfectly at the bottom status bar. Then simply click the green **Play (Run)** button at the top toolbar to install the newly compiled app right onto your physical device!

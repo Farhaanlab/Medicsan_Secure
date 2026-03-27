@@ -444,7 +444,6 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
 
         if (pythonResults && Array.isArray(pythonResults.medicines)) {
             // Enhanced logic: Python already did fuzzy matching against the dataset.
-            // We just need to find the corresponding local DB record for those matched names.
             for (const pMed of pythonResults.medicines) {
                 if (!pMed.matched_name) continue;
 
@@ -468,17 +467,19 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
                     console.log(`  ✅ Verified in database: "${dbMatch.name}"`);
                 } else if (!dbMatch) {
                     // Fallback to fuzzy match on the extracted name if the "matched name" isn't in local DB
-                    const match = await findBestMatch(pMed.extracted_name);
-                    if (match && !addedIds.has(match.id)) {
-                        addedIds.add(match.id);
+                    const fuzzyMatch = await findBestMatch(pMed.extracted_name);
+                    if (fuzzyMatch && !addedIds.has(fuzzyMatch.id)) {
+                        addedIds.add(fuzzyMatch.id);
                         medicines.push({
-                            id: match.id,
-                            medicine_name: match.name,
-                            manufacturer: match.manufacturer,
-                            dosage: match.dosageForm,
-                            price: match.price,
+                            id: fuzzyMatch.id,
+                            medicine_name: fuzzyMatch.name,
+                            manufacturer: fuzzyMatch.manufacturer,
+                            dosage: fuzzyMatch.dosageForm,
+                            price: fuzzyMatch.price,
                         });
-                        console.log(`  ✅ Found via local fuzzy fallback: "${match.name}" (score: ${match.score})`);
+                        console.log(`  ✅ Found via local fuzzy fallback: "${fuzzyMatch.name}" (score: ${fuzzyMatch.score})`);
+                    } else {
+                        console.log(`  ❌ Python match rejected locally: "${pMed.matched_name}"`);
                     }
                 }
             }
