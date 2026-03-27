@@ -36,11 +36,14 @@ const Dashboard = () => {
         api.getHistory().catch(() => []),
       ]);
 
-      const activeMeds = reminders.length;
-      const todaysDoses = reminders.reduce((acc: number, r: any) => {
-        const times = r.time ? r.time.split(',').length : 1;
-        return acc + times;
-      }, 0);
+      const uniqueMeds = new Set(reminders.map((r: any) => r.medicineName));
+      const activeMeds = uniqueMeds.size;
+      
+      const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+      const todaysDoses = new Set(
+        reminders.filter((r: any) => r.days.includes(todayStr) || r.days.includes('EVERYDAY'))
+                 .map((r: any) => r.medicineName)
+      ).size;
 
       const totalLogs = history.length;
       const takenLogs = history.filter((h: any) => h.status === 'TAKEN').length;
@@ -54,14 +57,40 @@ const Dashboard = () => {
 
       const today = new Date().toDateString();
       const todayHistory = history.filter((h: any) => new Date(h.takenAt).toDateString() === today);
-      const takenNames = new Set(todayHistory.filter((h: any) => h.status === 'TAKEN').map((h: any) => h.medicineName));
+      
+      // Calculate how many times each medicine was taken/skipped today
+      const takenCounts: Record<string, number> = {};
+      todayHistory.forEach((h: any) => {
+          if (h.status === 'TAKEN' || h.status === 'SKIPPED') {
+              takenCounts[h.medicineName] = (takenCounts[h.medicineName] || 0) + 1;
+          }
+      });
 
-      const scheduleItems = reminders.slice(0, 4).map((r: any) => ({
-        name: r.medicineName + (r.dosage ? ` ${r.dosage}` : ''),
-        time: r.time,
-        taken: takenNames.has(r.medicineName),
-      }));
-      setSchedule(scheduleItems);
+      // Sort all reminders by time chronologically
+      const sortedReminders = [...reminders].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      
+      // Map logs to slots sequentially
+      const markedCounts: Record<string, number> = {};
+      const scheduleItems = sortedReminders.map((r: any) => {
+        const medName = r.medicineName;
+        const totalTaken = takenCounts[medName] || 0;
+        const alreadyMarked = markedCounts[medName] || 0;
+        
+        let isTaken = false;
+        if (alreadyMarked < totalTaken) {
+            isTaken = true;
+            markedCounts[medName] = alreadyMarked + 1;
+        }
+
+        return {
+          name: r.medicineName + (r.dosage ? ` ${r.dosage}` : ''),
+          time: r.time,
+          taken: isTaken,
+        };
+      });
+
+      // Slice array to up to 6 to fit nicely without scrolling
+      setSchedule(scheduleItems.slice(0, 6));
     } catch {
       // Keep defaults
     } finally {

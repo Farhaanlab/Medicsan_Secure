@@ -174,16 +174,21 @@ const ScanPrescription = () => {
             formData.append("file", selectedFile);
             const data = await api.scanPrescription(formData);
             setResult(data);
-            // Python OCR returns { extracted_raw: [...], medicines: [...] }
-            // Each medicine has: matched_name, manufacturer, composition, price, pack_size, type
-            const meds = data?.medicines?.filter((m: any) => m.matched_name) || [];
+            
+            // Check both standard Node.js Response ({ parsed: { medicines: [] } })
+            // AND legacy Python response ({ medicines: [] })
+            const rawMeds = data?.parsed?.medicines || data?.medicines || [];
+            
+            // The node backend uses 'medicine_name', the python backend used 'matched_name'
+            const meds = rawMeds.filter((m: any) => m.medicine_name || m.matched_name);
+
             if (meds.length > 0) {
                 setEditableMeds(meds.map((med: any) => ({
-                    medicine_name: med.matched_name,
+                    medicine_name: med.medicine_name || med.matched_name,
                     manufacturer: med.manufacturer,
-                    composition: med.composition,
+                    composition: med.composition || med.dosage || "Standard Formulation",
                     price: med.price,
-                    dosage: med.type || "",
+                    dosage: med.dosage || med.type || "Tablet",
                     packSizeLabel: med.pack_size || "",
                 })));
                 // DESELECT ALL BY DEFAULT as requested

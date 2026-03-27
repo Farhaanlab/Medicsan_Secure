@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, CheckCircle, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { api, getStoredUser } from "@/lib/api";
+import { api, getStoredUser, API_HOST } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
@@ -95,7 +95,7 @@ export default function ActiveReminderPopup() {
             // If web or if native but they have a custom tone, try custom tone.
             // (Native can only play custom if foregrounded, which is the case since this React component is running)
             if (user?.ringtoneUrl) {
-                src = `http://localhost:3001${user.ringtoneUrl}`;
+                src = `${API_HOST}${user.ringtoneUrl}`;
             }
 
             if (!audioRef.current) {

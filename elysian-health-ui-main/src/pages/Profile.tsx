@@ -6,7 +6,7 @@ import PageHeader from "@/components/PageHeader";
 import GlassCard from "@/components/GlassCard";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
-import { api } from "@/lib/api";
+import { api, API_HOST } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation, LANGUAGE_LIST, type Language } from "@/lib/i18n";
 
@@ -160,7 +160,7 @@ const Profile = () => {
             {ringtoneUrl && (
               <div className="mt-3 p-3 rounded-xl bg-secondary/30">
                 <p className="text-xs font-medium mb-2">Current Ringtone:</p>
-                <audio controls className="w-full h-8" src={`http://localhost:3001${ringtoneUrl}`}>
+                <audio controls className="w-full h-8" src={`${API_HOST}${ringtoneUrl}`}>
                   Your browser does not support the audio element.
                 </audio>
               </div>

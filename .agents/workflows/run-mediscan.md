@@ -1,31 +1,24 @@
 ---
 description: How to start and run the MediScan Website, Backend API, OCR Server, and Android App
 ---
+
 # Running MediScan (Full Stack & Mobile)
 
 To get the full MediScan application running locally—including the website, the Node.js backend, the Python OCR service, and the Android mobile app—you need to launch four separate services. 
 
 Here is everything you need to do, step-by-step.
 
-## 1. Finding your Local IP Address (For Android Only)
-If you plan to run the Android app on your physical phone, your phone needs to know how to talk to your computer's backend over your local WiFi.
-
-1. Open a terminal and run:
-   ```powershell
-   ipconfig
-   ```
-2. Look for the **IPv4 Address** under your active Wi-Fi or Ethernet adapter (e.g., `192.168.1.6`).
-3. Open `elysian-health-ui-main/src/lib/api.ts`.
-4. Update the `NATIVE_API_URL` variable to point to your IP address on port 3001:
-   ```typescript
-   const NATIVE_API_URL = 'http://YOUR_IPv4_ADDRESS:3001/api';
-   // Example: const NATIVE_API_URL = 'http://192.168.1.6:3001/api';
-   ```
+## 1. Local Network API (For Physical Android Devices)
+Your Android app now automatically connects to your live Render backend (`https://medicsan-secure.onrender.com/api`) when built for production!
+If you explicitly want to test it locally against your computer instead:
+1. Find your IPv4 address (`ipconfig` in terminal).
+2. Create a `.env` file in `elysian-health-ui-main` and add: 
+   `VITE_API_URL=http://YOUR_IPV4:3001/api`
 
 ---
 
 ## 2. Start the Python OCR Server (Prescription Scanning)
-This server processes the images loaded from the frontend.
+This server processes images locally. (In production, the node backend falls back to Gemini AI if this isn't available).
 
 1. Open a new terminal.
 2. Navigate to the OCR server folder:
@@ -38,12 +31,11 @@ This server processes the images loaded from the frontend.
    // turbo
    uvicorn main:app --host 0.0.0.0 --port 8085
    ```
-   *(Keep this terminal running)*
 
 ---
 
 ## 3. Start the Node.js Backend API
-This server handles authentication, database connections, and the main APIs.
+This server connects directly to your live Supabase PostgreSQL database!
 
 1. Open a second terminal window.
 2. Navigate to the API folder:
@@ -56,12 +48,11 @@ This server handles authentication, database connections, and the main APIs.
    // turbo
    npm run dev
    ```
-   *(Keep this terminal running)*
 
 ---
 
 ## 4. Start the Frontend Website
-This runs the React/Vite website accessible from your computer browser.
+Runs the React/Vite patient portal locally.
 
 1. Open a third terminal window.
 2. Navigate to the frontend folder:
@@ -75,12 +66,11 @@ This runs the React/Vite website accessible from your computer browser.
    npm run dev
    ```
 4. Now, open your web browser and go to: **http://localhost:8080**
-   *(Keep this terminal running)*
 
 ---
 
 ## 5. Start the Next.js Secondary Website
-This runs the Next.js application frontend.
+Runs the Next.js auxiliary app.
 
 1. Open a fourth terminal window.
 2. Navigate to the web folder:
@@ -94,20 +84,19 @@ This runs the Next.js application frontend.
    npm run dev -- -p 8081
    ```
 4. Now, open your web browser and go to: **http://localhost:8081**
-   *(Keep this terminal running)*
 
 ---
 
 ## 6. Build and Run the Android App
-After ensuring your Native API URL is correctly set to your computer's IP address (Step 1), you compile the web app to native format and launch it using Android Studio.
+Compile the web app to native format and launch it using Android Studio.
 
-1. Open a fifth terminal window.
+1. Open a fifth terminal.
 2. Navigate to the frontend folder:
    ```powershell
    // turbo
    cd c:\Users\faarh\Desktop\Antigravity_mediscan_prompt1\elysian-health-ui-main
    ```
-3. Build the modern web assets:
+3. Build the modern web assets (This will automatically hook it to the Render backend!):
    ```powershell
    // turbo
    npm run build
@@ -122,4 +111,3 @@ After ensuring your Native API URL is correctly set to your computer's IP addres
    // turbo
    $env:CAPACITOR_ANDROID_STUDIO_PATH="C:\Program Files\Android\Android Studio1\bin\studio64.exe"; npx cap open android
    ```
-6. **In Android Studio:** Wait for the "Gradle Sync" to finish and index perfectly at the bottom status bar. Then simply click the green **Play (Run)** button at the top toolbar to install the newly compiled app right onto your physical device!

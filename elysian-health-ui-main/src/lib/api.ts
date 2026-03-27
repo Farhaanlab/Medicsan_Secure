@@ -1,14 +1,19 @@
 // Centralized API client with JWT token management
 import { Capacitor } from '@capacitor/core';
+import { supabase } from './supabase';
 
-// In native apps, we can't use relative /api paths (no Vite proxy).
-// Use the backend URL directly. Change this to your server IP/domain.
-const NATIVE_API_URL = 'http://192.168.1.12:3001/api'; // Host machine WiFi IP for physical device
-const WEB_API_URL = '/api'; // Vite proxy handles this
+const IS_PROD = import.meta.env.MODE === 'production';
+const DEFAULT_URL = IS_PROD ? 'https://medicsan-secure.onrender.com/api' : 'http://localhost:3001/api';
 
-const API_BASE = Capacitor.isNativePlatform() ? NATIVE_API_URL : WEB_API_URL;
+const NATIVE_API_URL = import.meta.env.VITE_API_URL || DEFAULT_URL;
+const WEB_API_URL = import.meta.env.VITE_API_URL || DEFAULT_URL;
 
-function getToken(): string | null {
+export const API_BASE = Capacitor.isNativePlatform() ? NATIVE_API_URL : WEB_API_URL;
+export const API_HOST = API_BASE.replace(/\/api$/, '');
+
+export async function getToken(): Promise<string | null> {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.access_token) return data.session.access_token;
     return localStorage.getItem('mediscan_token');
 }
 
@@ -35,7 +40,7 @@ async function request<T = any>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<T> {
-    const token = getToken();
+    const token = await getToken();
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(options.headers as Record<string, string> || {}),
@@ -103,7 +108,7 @@ export const api = {
     uploadRingtone: async (file: File) => {
         const formData = new FormData();
         formData.append('ringtone', file);
-        const token = getToken();
+        const token = await getToken();
         let res: Response;
         try {
             res = await fetch(`${API_BASE}/user/ringtone`, {
@@ -150,16 +155,20 @@ export const api = {
     logIntake: (medicineName: string, status: string) =>
         request('/user/history', { method: 'POST', body: JSON.stringify({ medicineName, status }) }),
 
-    // OCR Scan — hits the standalone Python OCR server directly (same as the website uses)
+    // OCR Scan
     scanPrescription: async (formData: FormData) => {
+        // Swap form field name from 'file' (Python standard) to 'image' (Node standard) if necessary
+        if (formData.has('file') && !formData.has('image')) {
+            formData.append('image', formData.get('file') as Blob);
+            formData.delete('file');
+        }
+        
+        const token = await getToken();
         let res: Response;
         try {
-            // Use the Python OCR engine directly on port 8085
-            const scanUrl = Capacitor.isNativePlatform()
-                ? 'http://192.168.1.3:8085/scan'
-                : 'http://localhost:8085/scan';
-            res = await fetch(scanUrl, {
+            res = await fetch(`${API_BASE}/ocr/scan`, {
                 method: 'POST',
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 body: formData,
             });
         } catch {
