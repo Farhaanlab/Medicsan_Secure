@@ -32,51 +32,41 @@ async function main() {
     console.log(`Parsed ${results.length} rows.`);
 
     // Clear existing
-    await prisma.$executeRawUnsafe(`DELETE FROM MedicineMaster`);
+    await prisma.medicineMaster.deleteMany({});
     console.log('Cleared existing medicines.');
 
-    // Insert in batches using raw SQL
-    const BATCH_SIZE = 200;
+    // Insert in batches using Prisma
+    const BATCH_SIZE = 2000;
     let inserted = 0;
 
     for (let i = 0; i < results.length; i += BATCH_SIZE) {
         const batch = results.slice(i, i + BATCH_SIZE);
 
-        const values: string[] = [];
-        const params: any[] = [];
-        let paramIndex = 0;
-
-        for (const row of batch) {
+        const dataToInsert = batch.map(row => {
             const comp1 = row.short_composition1 || '';
             const comp2 = row.short_composition2 || '';
             const composition = comp2 ? `${comp1} + ${comp2}` : comp1;
-            const name = (row.name || 'Unknown').trim();
-            const manufacturer = (row.manufacturer_name || '').trim() || null;
-            const price = row['price(₹)'] ? String(row['price(₹)']).trim() : null;
-            const dosageForm = (row.type || '').trim() || null;
-            const packSizeLabel = (row.pack_size_label || '').trim() || null;
-            const description = `Type: ${row.type || 'N/A'}, Pack: ${row.pack_size_label || 'N/A'}`;
-            const id = randomUUID();
+            
+            return {
+                id: randomUUID(),
+                name: (row.name || 'Unknown').trim(),
+                manufacturer: (row.manufacturer_name || '').trim() || null,
+                composition: composition.trim() || null,
+                description: `Type: ${row.type || 'N/A'}, Pack: ${row.pack_size_label || 'N/A'}`,
+                dosageForm: (row.type || '').trim() || null,
+                price: row['price(₹)'] ? String(row['price(₹)']).trim() : null,
+                packSizeLabel: (row.pack_size_label || '').trim() || null
+            };
+        });
 
-            values.push(`('${id.replace(/'/g, "''")}', '${name.replace(/'/g, "''")}', ${manufacturer ? `'${manufacturer.replace(/'/g, "''")}'` : 'NULL'}, ${composition.trim() ? `'${composition.trim().replace(/'/g, "''")}'` : 'NULL'}, ${description ? `'${description.replace(/'/g, "''")}'` : 'NULL'}, ${dosageForm ? `'${dosageForm.replace(/'/g, "''")}'` : 'NULL'}, ${price ? `'${price.replace(/'/g, "''")}'` : 'NULL'}, ${packSizeLabel ? `'${packSizeLabel.replace(/'/g, "''")}'` : 'NULL'})`);
-        }
-
-        if (values.length > 0) {
-            const sql = `INSERT INTO MedicineMaster (id, name, manufacturer, composition, description, dosageForm, price, packSizeLabel) VALUES ${values.join(', ')}`;
-            try {
-                await prisma.$executeRawUnsafe(sql);
-                inserted += values.length;
-            } catch (e: any) {
-                // If batch fails, try one by one
-                for (const v of values) {
-                    try {
-                        await prisma.$executeRawUnsafe(`INSERT INTO MedicineMaster (id, name, manufacturer, composition, description, dosageForm, price, packSizeLabel) VALUES ${v}`);
-                        inserted++;
-                    } catch (e2: any) {
-                        // Skip bad row
-                    }
-                }
-            }
+        try {
+            const created = await prisma.medicineMaster.createMany({
+                data: dataToInsert,
+                skipDuplicates: true
+            });
+            inserted += created.count;
+        } catch (e: any) {
+            console.error('Batch error on index', i);
         }
 
         if (i % 10000 === 0) {

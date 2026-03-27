@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
 // Middleware
 app.use(helmet({
@@ -20,7 +20,7 @@ app.use(helmet({
     crossOriginResourcePolicy: false,
 }));
 app.use(cors({
-    origin: true,
+    origin: "*",
     credentials: true,
 }));
 app.use(morgan('dev'));
@@ -56,69 +56,25 @@ app.get('/health', async (req, res) => {
     }
 });
 
-// Helper: kill process on port (Windows)
-function killPortProcess(port: number) {
-    try {
-        const result = execSync(`netstat -ano | findstr :${port} | findstr LISTENING`, { encoding: 'utf-8' });
-        const lines = result.trim().split('\n');
-        for (const line of lines) {
-            const parts = line.trim().split(/\s+/);
-            const pid = parts[parts.length - 1];
-            if (pid && pid !== '0') {
-                console.log(`Killing process ${pid} on port ${port}...`);
-                try {
-                    execSync(`taskkill /PID ${pid} /F`, { encoding: 'utf-8' });
-                    console.log(`Killed PID ${pid}`);
-                } catch (e) {
-                    // Process may already be gone
-                }
-            }
-        }
-    } catch (e) {
-        // No process found on port - that's fine
-    }
-}
+// Start Server
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+});
 
-// Start Server with auto-retry on port conflict
-function startServer(port: number, retried = false) {
-    const server = app.listen(port, '0.0.0.0', () => {
-        console.log(`Server is running on http://0.0.0.0:${port}`);
+const gracefulShutdown = () => {
+    console.log('Received kill signal, shutting down gracefully');
+    server.close(() => {
+        console.log('Closed out remaining connections');
+        process.exit(0);
     });
 
-    server.on('error', (err: any) => {
-        if (err.code === 'EADDRINUSE' && !retried) {
-            console.log(`Port ${port} is in use. Attempting to kill blocking process...`);
-            killPortProcess(port);
-            // Wait a moment then retry once
-            setTimeout(() => {
-                startServer(port, true);
-            }, 1500);
-        } else if (err.code === 'EADDRINUSE' && retried) {
-            console.error(`Port ${port} is still in use after killing. Exiting.`);
-            process.exit(1);
-        } else {
-            console.error('Server error:', err);
-            process.exit(1);
-        }
-    });
+    setTimeout(() => {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+    }, 10000);
+};
 
-    const gracefulShutdown = () => {
-        console.log('Received kill signal, shutting down gracefully');
-        server.close(() => {
-            console.log('Closed out remaining connections');
-            process.exit(0);
-        });
-
-        setTimeout(() => {
-            console.error('Could not close connections in time, forcefully shutting down');
-            process.exit(1);
-        }, 10000);
-    };
-
-    process.on('SIGTERM', gracefulShutdown);
-    process.on('SIGINT', gracefulShutdown);
-}
-
-startServer(PORT);
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 export default app;
