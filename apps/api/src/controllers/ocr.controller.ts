@@ -349,7 +349,9 @@ async function scanWithLocalPython(imageBuffer: Buffer, mimeType: string): Promi
         const blob = new _Blob([imageBuffer], { type: mimeType });
         formData.append('file', blob, 'prescription.jpg');
 
-        const response = await _fetch('http://localhost:8085/scan', {
+        const ocrUrlRaw = process.env.PYTHON_OCR_URL || 'http://localhost:8085';
+        const ocrUrl = ocrUrlRaw.replace(/\/+$/, '');
+        const response = await _fetch(`${ocrUrl}/scan`, {
             method: 'POST',
             body: formData,
         });

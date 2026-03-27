@@ -17,7 +17,8 @@ from matcher import match_medicines
 # ---------------------------------------------------------
 # IMPORTANT: Update this path if Tesseract is installed elsewhere.
 # Default Windows installation path:
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+if os.name == 'nt':
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 # ---------------------------------------------------------
 
 app = FastAPI(title="Prescription Scanner API (Local)")
