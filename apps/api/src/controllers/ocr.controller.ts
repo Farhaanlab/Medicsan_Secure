@@ -388,12 +388,21 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
         try {
             console.log('🐍 Calling Local Python OCR Service...');
             pythonResults = await scanWithLocalPython(imageBuffer, mimeType);
-            if (pythonResults && pythonResults.extracted_raw?.length > 0) {
-                medicineNamesList = pythonResults.extracted_raw;
-                console.log(`✅ Python service extracted ${medicineNamesList.length} candidates.`);
+            
+            // Only accept Python's result if it ACTUALLY found structured medicines.
+            // If it only found raw garbage text (which happens with handwriting), throw it away and fallback to Gemini.
+            if (pythonResults && Array.isArray(pythonResults.medicines) && pythonResults.medicines.length > 0) {
+                medicineNamesList = pythonResults.extracted_raw || [];
+                console.log(`✅ Python service matched ${pythonResults.medicines.length} candidates.`);
+            } else {
+                console.log('⚠️ Python service found 0 medicines (likely handwriting). Handing off to Gemini AI...');
+                pythonResults = null;
+                medicineNamesList = [];
             }
         } catch (err: any) {
             console.warn('⚠️ Python service hook failed:', err.message);
+            pythonResults = null;
+            medicineNamesList = [];
         }
 
         // 2. Fallback: Gemini Vision AI

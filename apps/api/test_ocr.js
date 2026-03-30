@@ -12,7 +12,7 @@ async function testOCR() {
 
     console.log("Sending to Render API...");
     try {
-        const res = await fetch('https://medicsan-secure.onrender.com/api/ocr/scan', {
+        const res = await fetch('http://localhost:3001/api/ocr/scan', {
             method: 'POST',
             body: formData
         });
