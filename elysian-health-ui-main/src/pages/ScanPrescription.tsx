@@ -105,13 +105,24 @@ const ScanPrescription = () => {
         if (videoRef.current && canvasRef.current) {
             const video = videoRef.current;
             const canvas = canvasRef.current;
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const dataUrl = canvas.toDataURL("image/jpeg", 1.0); // 100% quality instead of 0.8
-                setCapturedImage(dataUrl);
+
+                // Resize and compress cleanly to completely prevent Cloud Timeouts on Render Free Tier
+                const MAX_WIDTH = 1600;
+                let width = video.videoWidth;
+                let height = video.videoHeight;
+                if (width > MAX_WIDTH) {
+                    height = Math.floor(height * (MAX_WIDTH / width));
+                    width = MAX_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                
+                if (ctx) {
+                    ctx.drawImage(video, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.8); // 80% quality drops 8MB to ~300KB
+                    setCapturedImage(dataUrl);
             }
         }
     };
@@ -165,13 +176,49 @@ const ScanPrescription = () => {
         }
     };
 
+    const compressFile = (file: File): Promise<File> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = Math.floor(height * (MAX_WIDTH / width));
+                        width = MAX_WIDTH;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', 0.8);
+                };
+            };
+        });
+    };
+
     const processImage = async () => {
         if (!selectedFile) return;
         setIsLoading(true);
         setError("");
         try {
+            const compressedFile = await compressFile(selectedFile);
             const formData = new FormData();
-            formData.append("file", selectedFile);
+            formData.append("file", compressedFile);
+            
             const data = await api.scanPrescription(formData);
             setResult(data);
             

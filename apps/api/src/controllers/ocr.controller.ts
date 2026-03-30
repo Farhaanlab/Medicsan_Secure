@@ -389,20 +389,12 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
             console.log('🐍 Calling Local Python OCR Service...');
             pythonResults = await scanWithLocalPython(imageBuffer, mimeType);
             
-            // Only accept Python's result if it ACTUALLY found structured medicines.
-            // If it only found raw garbage text (which happens with handwriting), throw it away and fallback to Gemini.
-            if (pythonResults && Array.isArray(pythonResults.medicines) && pythonResults.medicines.length > 0) {
-                medicineNamesList = pythonResults.extracted_raw || [];
-                console.log(`✅ Python service matched ${pythonResults.medicines.length} candidates.`);
-            } else {
-                console.log('⚠️ Python service found 0 medicines (likely handwriting). Handing off to Gemini AI...');
-                pythonResults = null;
-                medicineNamesList = [];
+            if (pythonResults && Array.isArray(pythonResults.extracted_raw) && pythonResults.extracted_raw.length > 0) {
+                medicineNamesList = pythonResults.extracted_raw;
+                console.log(`✅ Python service extracted ${medicineNamesList.length} raw candidates.`);
             }
         } catch (err: any) {
             console.warn('⚠️ Python service hook failed:', err.message);
-            pythonResults = null;
-            medicineNamesList = [];
         }
 
         // 2. Fallback: Gemini Vision AI
@@ -441,14 +433,12 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
         const medicines: any[] = [];
         const addedIds = new Set<string>();
 
+        // 1. Process Python's Direct DB Matches
         if (pythonResults && Array.isArray(pythonResults.medicines)) {
-            // Enhanced logic: Python already did fuzzy matching against the dataset.
             for (const pMed of pythonResults.medicines) {
                 if (!pMed.matched_name) continue;
 
                 console.log(`🔍 Python match: "${pMed.extracted_name}" -> "${pMed.matched_name}"`);
-
-                // Exact match first (since Python matched against the SAME dataset)
                 const dbMatch = await prisma.medicineMaster.findFirst({
                     where: { name: pMed.matched_name },
                     select: { id: true, name: true, manufacturer: true, dosageForm: true, price: true }
@@ -464,60 +454,39 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
                         price: dbMatch.price,
                     });
                     console.log(`  ✅ Verified in database: "${dbMatch.name}"`);
-                } else if (!dbMatch) {
-                    // Fallback to fuzzy match on the extracted name if the "matched name" isn't in local DB
-                    const fuzzyMatch = await findBestMatch(pMed.extracted_name);
-                    if (fuzzyMatch && !addedIds.has(fuzzyMatch.id)) {
-                        addedIds.add(fuzzyMatch.id);
-                        medicines.push({
-                            id: fuzzyMatch.id,
-                            medicine_name: fuzzyMatch.name,
-                            manufacturer: fuzzyMatch.manufacturer,
-                            dosage: fuzzyMatch.dosageForm,
-                            price: fuzzyMatch.price,
-                        });
-                        console.log(`  ✅ Found via local fuzzy fallback: "${fuzzyMatch.name}" (score: ${fuzzyMatch.score})`);
-                    } else {
-                        console.log(`  🟡 Python match rejected locally: "${pMed.matched_name}". Retaining as Unverified.`);
-                        const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
-                        addedIds.add(tempId);
-                        medicines.push({
-                            id: tempId,
-                            medicine_name: pMed.extracted_name,
-                            manufacturer: "Unverified Extraction",
-                            dosage: "Unknown",
-                            price: "N/A",
-                        });
-                    }
                 }
             }
-        } else {
-            // Standard Flow: Match each candidate name manually
-            for (const name of medicineNamesList) {
-                console.log(`🔍 Looking up: "${name}"`);
-                const match = await findBestMatch(name);
-                if (match && !addedIds.has(match.id)) {
-                    addedIds.add(match.id);
-                    medicines.push({
-                        id: match.id,
-                        medicine_name: match.name,
-                        manufacturer: match.manufacturer,
-                        dosage: match.dosageForm,
-                        price: match.price,
-                    });
-                    console.log(`  ✅ Found: "${match.name}" (score: ${match.score})`);
-                } else {
-                    console.log(`  🟡 No DB match found: "${name}". Retaining as Unverified.`);
-                    const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
-                    addedIds.add(tempId);
-                    medicines.push({
-                        id: tempId,
-                        medicine_name: name,
-                        manufacturer: "Unverified Extraction",
-                        dosage: "Unknown",
-                        price: "N/A",
-                    });
-                }
+        }
+
+        // 2. Process ALL Raw Extractions (from Python OR Gemini) through standard Fuzzy Matching Fallback
+        for (const name of medicineNamesList) {
+            // Skip if we already successfully pulled this medication from Python structured matched_names above
+            if (medicines.some(m => m.medicine_name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(m.medicine_name.toLowerCase()))) continue;
+
+            console.log(`🔍 Looking up raw extraction: "${name}"`);
+            const match = await findBestMatch(name);
+            
+            if (match && !addedIds.has(match.id)) {
+                addedIds.add(match.id);
+                medicines.push({
+                    id: match.id,
+                    medicine_name: match.name,
+                    manufacturer: match.manufacturer,
+                    dosage: match.dosageForm,
+                    price: match.price,
+                });
+                console.log(`  ✅ Found via local fuzzy fallback: "${match.name}" (score: ${match.score})`);
+            } else {
+                console.log(`  🟡 No DB match found for: "${name}". Retaining as Unverified.`);
+                const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
+                addedIds.add(tempId);
+                medicines.push({
+                    id: tempId,
+                    medicine_name: name.substring(0, 100).trim(),
+                    manufacturer: "Unverified Extraction",
+                    dosage: "Unknown",
+                    price: "N/A",
+                });
             }
         }
 

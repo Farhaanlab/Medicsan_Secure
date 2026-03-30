@@ -56,8 +56,8 @@ async function request<T = any>(
             ...options,
             headers,
         });
-    } catch (networkErr) {
-        throw new Error(`Network error: Could not reach the server`);
+    } catch (networkErr: any) {
+        throw new Error(networkErr.message || `Network error: Could not reach the server`);
     }
 
     if (res.status === 401) {
@@ -116,8 +116,8 @@ export const api = {
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 body: formData
             });
-        } catch (err) {
-            throw new Error('Network error: Could not reach the server');
+        } catch (err: any) {
+            throw new Error(err.message || 'Network error: Could not reach the server');
         }
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
@@ -171,8 +171,8 @@ export const api = {
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 body: formData,
             });
-        } catch {
-            throw new Error('Network error: Could not reach the server');
+        } catch (err: any) {
+            throw new Error(err.message || 'Network error: Could not reach the server');
         }
         const contentType = res.headers.get('content-type') || '';
         let data: any;
