@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
-import FormData from 'form-data';
+import Tesseract from 'tesseract.js';
 import { PrismaClient } from '@prisma/client';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -332,36 +331,40 @@ function extractCandidatesFromOcr(rawText: string): string[] {
 }
 
 // ──────────────────────────────────────────────────────────────
-// LOCAL PYTHON OCR — safely tunnels file via Axios + form-data avoiding 422 boundaries
+// LOCAL PYTHON OCR — calls the improved OCR service on 8085
 // ──────────────────────────────────────────────────────────────
 async function scanWithLocalPython(imageBuffer: Buffer, mimeType: string): Promise<any | null> {
     try {
-        const formData = new FormData();
-        // Provide the filename to satisfy FastAPI's strict UploadFile assertions
-        formData.append('file', imageBuffer, {
-            filename: 'prescription.jpg',
-            contentType: mimeType
-        });
+        // Access globals via globalThis to bypass TS errors and ensure Node 18+ compatibility
+        const _FormData = (globalThis as any).FormData;
+        const _Blob = (globalThis as any).Blob;
+        const _fetch = (globalThis as any).fetch;
+
+        if (!_FormData || !_Blob || !_fetch) {
+            console.warn('⚠️ Native fetch, FormData, or Blob not available in this Node environment.');
+            return null;
+        }
+
+        const formData = new _FormData();
+        const blob = new _Blob([imageBuffer], { type: mimeType });
+        formData.append('file', blob, 'prescription.jpg');
 
         const ocrUrlRaw = process.env.PYTHON_OCR_URL || 'http://localhost:8085';
         const ocrUrl = ocrUrlRaw.replace(/\/+$/, '');
-        
-        const response = await axios.post(`${ocrUrl}/scan`, formData, {
-            headers: {
-                ...formData.getHeaders(),
-            },
-            // Generous timeout to wait for Python cold-start on Render
-            timeout: 90000 
+        const response = await _fetch(`${ocrUrl}/scan`, {
+            method: 'POST',
+            body: formData,
         });
 
-        return response.data;
-    } catch (error: any) {
-        if (error.response) {
-            console.error(`⚠️ Python service returned ${error.response.status}:`, error.response.data);
-        } else {
-            console.error('⚠️ Python service communication failed:', error.message);
+        if (!response.ok) {
+            console.warn(`⚠️ Python service returned ${response.status}: ${response.statusText}`);
+            return null; // Fallback to Gemini instead of crashing/erroring
         }
-        return null; // Gracefully fallback to Gemini
+
+        return await response.json();
+    } catch (error) {
+        console.error('⚠️ Local Python OCR service communication failed:', error);
+        return null; // Fallback to Gemini
     }
 }
 
@@ -388,10 +391,9 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
         try {
             console.log('🐍 Calling Local Python OCR Service...');
             pythonResults = await scanWithLocalPython(imageBuffer, mimeType);
-            
-            if (pythonResults && Array.isArray(pythonResults.extracted_raw) && pythonResults.extracted_raw.length > 0) {
+            if (pythonResults && pythonResults.extracted_raw?.length > 0) {
                 medicineNamesList = pythonResults.extracted_raw;
-                console.log(`✅ Python service extracted ${medicineNamesList.length} raw candidates.`);
+                console.log(`✅ Python service extracted ${medicineNamesList.length} candidates.`);
             }
         } catch (err: any) {
             console.warn('⚠️ Python service hook failed:', err.message);
@@ -411,12 +413,21 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
             }
         }
 
-        // TESSERACT MEMORY LEAK REMOVED
-        // We purposely omit Tesseract.recognize here because running tesseract.js 
-        // with a 4K mobile camera image frequently spikes Node RAM > 500MB, triggering
-        // OOM kills (SIGKILL) on Render Free Tier, resulting in 502/503 errors on mobile.
+        // Fallback: Tesseract OCR
         if (medicineNamesList.length === 0) {
-            console.log('⚠️ Both Python and Gemini failed to extract names. Bypassing Tesseract to protect Server RAM.');
+            console.log('📷 Using Tesseract OCR fallback...');
+            const ocrResult = await Tesseract.recognize(imageBuffer, 'eng', {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        process.stdout.write(`\rOCR: ${Math.round((m.progress || 0) * 100)}%`);
+                    }
+                },
+            });
+            console.log('');
+            const rawText = cleanOcrText(ocrResult.data.text);
+            console.log('📝 Tesseract raw text:\n', rawText.substring(0, 500));
+            medicineNamesList = extractCandidatesFromOcr(rawText);
+            console.log('📋 OCR candidates:', medicineNamesList);
         }
 
         if (medicineNamesList.length === 0) {
@@ -433,12 +444,14 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
         const medicines: any[] = [];
         const addedIds = new Set<string>();
 
-        // 1. Process Python's Direct DB Matches
         if (pythonResults && Array.isArray(pythonResults.medicines)) {
+            // Enhanced logic: Python already did fuzzy matching against the dataset.
             for (const pMed of pythonResults.medicines) {
                 if (!pMed.matched_name) continue;
 
                 console.log(`🔍 Python match: "${pMed.extracted_name}" -> "${pMed.matched_name}"`);
+
+                // Exact match first (since Python matched against the SAME dataset)
                 const dbMatch = await prisma.medicineMaster.findFirst({
                     where: { name: pMed.matched_name },
                     select: { id: true, name: true, manufacturer: true, dosageForm: true, price: true }
@@ -454,39 +467,42 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
                         price: dbMatch.price,
                     });
                     console.log(`  ✅ Verified in database: "${dbMatch.name}"`);
+                } else if (!dbMatch) {
+                    // Fallback to fuzzy match on the extracted name if the "matched name" isn't in local DB
+                    const fuzzyMatch = await findBestMatch(pMed.extracted_name);
+                    if (fuzzyMatch && !addedIds.has(fuzzyMatch.id)) {
+                        addedIds.add(fuzzyMatch.id);
+                        medicines.push({
+                            id: fuzzyMatch.id,
+                            medicine_name: fuzzyMatch.name,
+                            manufacturer: fuzzyMatch.manufacturer,
+                            dosage: fuzzyMatch.dosageForm,
+                            price: fuzzyMatch.price,
+                        });
+                        console.log(`  ✅ Found via local fuzzy fallback: "${fuzzyMatch.name}" (score: ${fuzzyMatch.score})`);
+                    } else {
+                        console.log(`  ❌ Python match rejected locally: "${pMed.matched_name}"`);
+                    }
                 }
             }
-        }
-
-        // 2. Process ALL Raw Extractions (from Python OR Gemini) through standard Fuzzy Matching Fallback
-        for (const name of medicineNamesList) {
-            // Skip if we already successfully pulled this medication from Python structured matched_names above
-            if (medicines.some(m => m.medicine_name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(m.medicine_name.toLowerCase()))) continue;
-
-            console.log(`🔍 Looking up raw extraction: "${name}"`);
-            const match = await findBestMatch(name);
-            
-            if (match && !addedIds.has(match.id)) {
-                addedIds.add(match.id);
-                medicines.push({
-                    id: match.id,
-                    medicine_name: match.name,
-                    manufacturer: match.manufacturer,
-                    dosage: match.dosageForm,
-                    price: match.price,
-                });
-                console.log(`  ✅ Found via local fuzzy fallback: "${match.name}" (score: ${match.score})`);
-            } else {
-                console.log(`  🟡 No DB match found for: "${name}". Retaining as Unverified.`);
-                const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
-                addedIds.add(tempId);
-                medicines.push({
-                    id: tempId,
-                    medicine_name: name.substring(0, 100).trim(),
-                    manufacturer: "Unverified Extraction",
-                    dosage: "Unknown",
-                    price: "N/A",
-                });
+        } else {
+            // Standard Flow: Match each candidate name manually
+            for (const name of medicineNamesList) {
+                console.log(`🔍 Looking up: "${name}"`);
+                const match = await findBestMatch(name);
+                if (match && !addedIds.has(match.id)) {
+                    addedIds.add(match.id);
+                    medicines.push({
+                        id: match.id,
+                        medicine_name: match.name,
+                        manufacturer: match.manufacturer,
+                        dosage: match.dosageForm,
+                        price: match.price,
+                    });
+                    console.log(`  ✅ Found: "${match.name}" (score: ${match.score})`);
+                } else {
+                    console.log(`  ❌ No match found: "${name}"`);
+                }
             }
         }
 
