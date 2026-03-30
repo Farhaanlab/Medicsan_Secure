@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import Tesseract from 'tesseract.js';
+import axios from 'axios';
+import FormData from 'form-data';
 import { PrismaClient } from '@prisma/client';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -331,40 +332,36 @@ function extractCandidatesFromOcr(rawText: string): string[] {
 }
 
 // ──────────────────────────────────────────────────────────────
-// LOCAL PYTHON OCR — calls the improved OCR service on 8085
+// LOCAL PYTHON OCR — safely tunnels file via Axios + form-data avoiding 422 boundaries
 // ──────────────────────────────────────────────────────────────
 async function scanWithLocalPython(imageBuffer: Buffer, mimeType: string): Promise<any | null> {
     try {
-        // Access globals via globalThis to bypass TS errors and ensure Node 18+ compatibility
-        const _FormData = (globalThis as any).FormData;
-        const _Blob = (globalThis as any).Blob;
-        const _fetch = (globalThis as any).fetch;
-
-        if (!_FormData || !_Blob || !_fetch) {
-            console.warn('⚠️ Native fetch, FormData, or Blob not available in this Node environment.');
-            return null;
-        }
-
-        const formData = new _FormData();
-        const blob = new _Blob([imageBuffer], { type: mimeType });
-        formData.append('file', blob, 'prescription.jpg');
+        const formData = new FormData();
+        // Provide the filename to satisfy FastAPI's strict UploadFile assertions
+        formData.append('file', imageBuffer, {
+            filename: 'prescription.jpg',
+            contentType: mimeType
+        });
 
         const ocrUrlRaw = process.env.PYTHON_OCR_URL || 'http://localhost:8085';
         const ocrUrl = ocrUrlRaw.replace(/\/+$/, '');
-        const response = await _fetch(`${ocrUrl}/scan`, {
-            method: 'POST',
-            body: formData,
+        
+        const response = await axios.post(`${ocrUrl}/scan`, formData, {
+            headers: {
+                ...formData.getHeaders(),
+            },
+            // Generous timeout to wait for Python cold-start on Render
+            timeout: 90000 
         });
 
-        if (!response.ok) {
-            console.warn(`⚠️ Python service returned ${response.status}: ${response.statusText}`);
-            return null; // Fallback to Gemini instead of crashing/erroring
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            console.error(`⚠️ Python service returned ${error.response.status}:`, error.response.data);
+        } else {
+            console.error('⚠️ Python service communication failed:', error.message);
         }
-
-        return await response.json();
-    } catch (error) {
-        console.error('⚠️ Local Python OCR service communication failed:', error);
-        return null; // Fallback to Gemini
+        return null; // Gracefully fallback to Gemini
     }
 }
 
@@ -413,21 +410,12 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
             }
         }
 
-        // Fallback: Tesseract OCR
+        // TESSERACT MEMORY LEAK REMOVED
+        // We purposely omit Tesseract.recognize here because running tesseract.js 
+        // with a 4K mobile camera image frequently spikes Node RAM > 500MB, triggering
+        // OOM kills (SIGKILL) on Render Free Tier, resulting in 502/503 errors on mobile.
         if (medicineNamesList.length === 0) {
-            console.log('📷 Using Tesseract OCR fallback...');
-            const ocrResult = await Tesseract.recognize(imageBuffer, 'eng', {
-                logger: m => {
-                    if (m.status === 'recognizing text') {
-                        process.stdout.write(`\rOCR: ${Math.round((m.progress || 0) * 100)}%`);
-                    }
-                },
-            });
-            console.log('');
-            const rawText = cleanOcrText(ocrResult.data.text);
-            console.log('📝 Tesseract raw text:\n', rawText.substring(0, 500));
-            medicineNamesList = extractCandidatesFromOcr(rawText);
-            console.log('📋 OCR candidates:', medicineNamesList);
+            console.log('⚠️ Both Python and Gemini failed to extract names. Bypassing Tesseract to protect Server RAM.');
         }
 
         if (medicineNamesList.length === 0) {
