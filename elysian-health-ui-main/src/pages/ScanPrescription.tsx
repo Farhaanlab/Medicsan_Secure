@@ -147,8 +147,10 @@ const ScanPrescription = () => {
             fetch(capturedImage)
                 .then(res => res.blob())
                 .then(blob => {
-                    const file = new File([blob], "prescription_camera.jpg", { type: "image/jpeg" });
-                    setSelectedFile(file);
+                    const b: any = blob;
+                    b.lastModifiedDate = new Date();
+                    b.name = "prescription_camera.jpg";
+                    setSelectedFile(b as File);
                 });
             stopCamera();
         }
@@ -213,13 +215,18 @@ const ScanPrescription = () => {
                     
                     canvas.toBlob((blob) => {
                         if (blob) {
-                            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                            const b: any = blob;
+                            b.lastModified = new Date().getTime();
+                            b.name = file.name;
+                            resolve(b as File);
                         } else {
                             resolve(file);
                         }
                     }, 'image/jpeg', 0.8);
                 };
+                img.onerror = () => resolve(file);
             };
+            reader.onerror = () => resolve(file);
         });
     };
 

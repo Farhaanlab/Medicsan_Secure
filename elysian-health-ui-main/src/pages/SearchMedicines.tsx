@@ -129,8 +129,10 @@ const SearchMedicines = () => {
       fetch(capturedImage)
         .then(res => res.blob())
         .then(blob => {
-          const file = new File([blob], "prescription_camera.jpg", { type: "image/jpeg" });
-          setScanFile(file);
+          const b: any = blob;
+          b.lastModifiedDate = new Date();
+          b.name = "prescription_camera.jpg";
+          setScanFile(b as File);
         });
       stopCamera();
     }
