@@ -1,27 +1,31 @@
 const fs = require('fs');
+const FormData = require('form-data');
+const fetch = require('node-fetch');
 
-async function testOCR() {
-    console.log("Creating dummy 100x100 white pixel image...");
-    const dummyImage = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJTUUH5gMREwc5Y1T/zAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAc0lEQVR42u3QMQEAAAwCoNk/tIvxg9WQQEHqL1UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHhTdwA1AAEF/2L2AAAAAElFTkSuQmCC', 'base64');
+async function stressTestOCR() {
+    console.log("Generating 2MB dummy 4K resolution buffer...");
+    // A 2MB Buffer of random binary data, but we'll try sending actual JPEG magic bytes if possible
+    const dummyImage = Buffer.alloc(2 * 1024 * 1024);
     
-    fs.writeFileSync('/tmp/dummy.png', dummyImage);
-    
+    // Fake JPEG header
+    dummyImage.write('FFD8FFE000104A46494600010101006000600000', 0, 'hex');
+
     const formData = new FormData();
-    const blob = new Blob([dummyImage], { type: 'image/png' });
-    formData.append('image', blob, 'dummy.png');
+    formData.append('image', dummyImage, { filename: 'test.jpg', contentType: 'image/jpeg' });
 
-    console.log("Sending to Render API...");
+    console.log("POSTing directly to internal Express Scanner via node-fetch...");
     try {
         const res = await fetch('http://localhost:3001/api/ocr/scan', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: formData.getHeaders() // Needed for older node-fetch
         });
         console.log("Status:", res.status);
         const text = await res.text();
-        console.log("Response:", text.substring(0, 500));
+        console.log("Response:", text.substring(0, 800));
     } catch (err) {
-        console.error("Fetch failed:", err.message);
+        console.error("Fetch failed hard:", err.message);
     }
 }
 
-testOCR();
+stressTestOCR();

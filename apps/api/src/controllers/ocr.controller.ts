@@ -478,7 +478,16 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
                         });
                         console.log(`  ✅ Found via local fuzzy fallback: "${fuzzyMatch.name}" (score: ${fuzzyMatch.score})`);
                     } else {
-                        console.log(`  ❌ Python match rejected locally: "${pMed.matched_name}"`);
+                        console.log(`  🟡 Python match rejected locally: "${pMed.matched_name}". Retaining as Unverified.`);
+                        const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
+                        addedIds.add(tempId);
+                        medicines.push({
+                            id: tempId,
+                            medicine_name: pMed.extracted_name,
+                            manufacturer: "Unverified Extraction",
+                            dosage: "Unknown",
+                            price: "N/A",
+                        });
                     }
                 }
             }
@@ -498,7 +507,16 @@ export const scanPrescription = async (req: Request | any, res: Response) => {
                     });
                     console.log(`  ✅ Found: "${match.name}" (score: ${match.score})`);
                 } else {
-                    console.log(`  ❌ No match found: "${name}"`);
+                    console.log(`  🟡 No DB match found: "${name}". Retaining as Unverified.`);
+                    const tempId = `unverified-${Math.random().toString(36).substring(7)}`;
+                    addedIds.add(tempId);
+                    medicines.push({
+                        id: tempId,
+                        medicine_name: name,
+                        manufacturer: "Unverified Extraction",
+                        dosage: "Unknown",
+                        price: "N/A",
+                    });
                 }
             }
         }
