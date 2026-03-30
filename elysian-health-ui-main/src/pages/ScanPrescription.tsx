@@ -10,6 +10,8 @@ import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
+import { Camera as CapacitorCamera } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 const ScanPrescription = () => {
     const navigate = useNavigate();
@@ -40,6 +42,17 @@ const ScanPrescription = () => {
 
     const startCamera = async () => {
         try {
+            // First, seamlessly guarantee Android native device permissions before accessing HTML5 WebView stream
+            if (Capacitor.isNativePlatform()) {
+                const permissionStatus = await CapacitorCamera.checkPermissions();
+                if (permissionStatus.camera !== 'granted') {
+                    const requestStatus = await CapacitorCamera.requestPermissions();
+                    if (requestStatus.camera !== 'granted') {
+                        throw new Error("Native camera permission was denied by the user.");
+                    }
+                }
+            }
+
             // Stop any existing stream first
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());

@@ -36,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data } = await supabase.auth.getSession();
         if (data.session?.user) {
             setUser(toUser(data.session.user));
+            setToken(data.session.access_token);
         } else {
             setUser(null);
         }
@@ -45,7 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // 1. Load Session on startup
         const loadSession = async () => {
             const { data } = await supabase.auth.getSession();
-            setUser(data.session?.user ? toUser(data.session.user) : null);
+            if (data.session?.user) {
+                setUser(toUser(data.session.user));
+                setToken(data.session.access_token);
+            } else {
+                setUser(null);
+            }
             setLoading(false);
         };
 
@@ -54,7 +60,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // 2. Listen for auth state changes (login, logout, token refresh, email confirmation)
         const { data: listener } = supabase.auth.onAuthStateChange(
             (_event, session) => {
-                setUser(session?.user ? toUser(session.user) : null);
+                if (session?.user) {
+                    setUser(toUser(session.user));
+                    setToken(session.access_token);
+                } else {
+                    setUser(null);
+                }
                 setLoading(false);
             }
         );
@@ -67,8 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = async (email: string, password: string) => {
         // Try Supabase auth first
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (!error && data.user) {
+        if (!error && data.user && data.session) {
             setUser(toUser(data.user));
+            setToken(data.session.access_token);
+            setStoredUser(toUser(data.user));
             return;
         }
 

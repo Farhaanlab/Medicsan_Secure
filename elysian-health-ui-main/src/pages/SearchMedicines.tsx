@@ -9,6 +9,8 @@ import GlassCard from "@/components/GlassCard";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/lib/i18n";
+import { Camera as CapacitorCamera } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 interface Medicine {
   id: string;
