@@ -1,0 +1,11 @@
+node_modules/
+dist/
+api_output.log
+test-img.out
+test-ocr.out
+validateOut.txt
+*.md
+.env
+.gitignore
+.dockerignore
+Dockerfile
