@@ -13,8 +13,8 @@ WORKDIR /usr/src/app
 # Copying this separately prevents re-running npm install on every code change.
 COPY package*.json ./
 
-# Install production dependencies.
-RUN npm install
+# Install all dependencies including dev (Cloud Build native stripping causes tsc to fail)
+RUN npm install --include=dev
 
 # Copy Prisma schema and generate the client BEFORE copying rest of the code
 # This ensures caching of the heavy Prisma build step

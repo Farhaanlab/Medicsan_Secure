@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from PIL import Image
+from PIL import Image, ImageOps
 import pytesseract
 import cv2
 import numpy as np
@@ -47,8 +47,15 @@ def preprocess_image(image_bytes):
     """
     Standard OpenCV pipeline to clean up an image for OCR.
     """
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    # 1. Parse with PIL first to safely restore native Android/iOS camera EXIF rotation
+    pill_img = Image.open(io.BytesIO(image_bytes))
+    pill_img = ImageOps.exif_transpose(pill_img)
+    
+    if pill_img.mode != 'RGB':
+        pill_img = pill_img.convert('RGB')
+        
+    img = np.array(pill_img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     # Resize to improve OCR (scale up 2x)
