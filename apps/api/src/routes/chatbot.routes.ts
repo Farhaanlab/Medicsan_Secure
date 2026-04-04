@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { chat } from '../controllers/chatbot.controller';
+import { chat, clearChat } from '../controllers/chatbot.controller';
+import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.post('/', chat);
+router.post('/', authenticate, chat);
+router.delete('/clear', authenticate, clearChat);
 
 export default router;
