@@ -46,6 +46,16 @@ app.get('/', (req, res) => {
     res.json({ message: 'MediScan Secure Go API is running', timestamp: new Date() });
 });
 
+// Temporary debug - check env vars (REMOVE AFTER DEBUGGING)
+app.get('/debug-env', (req, res) => {
+    res.json({
+        hasGeminiKey: !!process.env.GEMINI_API_KEY,
+        geminiKeyPrefix: process.env.GEMINI_API_KEY?.substring(0, 8) || 'NOT_SET',
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        hasPythonOcrUrl: !!process.env.PYTHON_OCR_URL,
+    });
+});
+
 // Health Check
 app.get('/health', async (req, res) => {
     try {
